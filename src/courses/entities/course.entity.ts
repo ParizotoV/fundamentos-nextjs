@@ -21,5 +21,5 @@ export class Course {
   @ManyToMany(() => Tag, (tag) => tag.courses, {
     cascade: true,
   })
-  tags: string[];
+  tags: Tag[];
 }
