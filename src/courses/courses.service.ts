@@ -30,6 +30,8 @@ export class CoursesService {
     if (!course) {
       throw new NotFoundException(`Course ID: ${id} not found`);
     }
+
+    return course;
   }
 
   async create(createCourseDto: CreateCoursesDto) {
