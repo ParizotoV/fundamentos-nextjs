@@ -9,7 +9,7 @@ import { Tag } from './entities/tag.entity';
 @Injectable()
 export class CoursesService {
   constructor(
-    @InjectRepository(Course)
+    @Inject('COURSES_REPOSITORY')
     private readonly courseRepository: Repository<Course>,
 
     @InjectRepository(Tag)
