@@ -1,5 +1,6 @@
 import { CoursesService } from './courses.service';
 import { CreateCoursesDto } from './dto/create-courses.dto';
+import { UpdateCoursesDto } from './dto/update-courses.dto';
 
 describe('CoursesService', () => {
   let service: CoursesService;
@@ -91,6 +92,80 @@ describe('CoursesService', () => {
 
     expect(mockCoursesRepository.find).toHaveBeenCalled();
     expect(expectOutputCourse).toStrictEqual(courses);
+  });
+
+  it('should gets a courses', async () => {
+    const expectOutputTags = [
+      {
+        id,
+        name: 'nestjs',
+        created_at: date,
+      },
+    ];
+
+    const expectOutputCourse = {
+      id,
+      name: 'Test',
+      description: 'Test description',
+      created_at: date,
+      tags: expectOutputTags,
+    };
+    const mockCoursesRepository = {
+      findOne: jest.fn().mockReturnValue(Promise.resolve(expectOutputCourse)),
+    };
+
+    // @ts-expect-error defined part of methods
+    service['courseRepository'] = mockCoursesRepository;
+
+    const courses = await service.findOne(id);
+
+    expect(mockCoursesRepository.findOne).toHaveBeenCalled();
+    expect(expectOutputCourse).toStrictEqual(courses);
+  });
+
+  it('should updates a course', async () => {
+    const expectOutputTags = [
+      {
+        id,
+        name: 'nestjs',
+        created_at: date,
+      },
+    ];
+
+    const expectOutputCourse = {
+      id,
+      name: 'Test',
+      description: 'Test description',
+      created_at: date,
+      tags: expectOutputTags,
+    };
+
+    const mockCoursesRepository = {
+      update: jest.fn().mockReturnValue(Promise.resolve(expectOutputCourse)),
+      save: jest.fn().mockReturnValue(Promise.resolve(expectOutputCourse)),
+      preload: jest.fn().mockReturnValue(Promise.resolve(expectOutputCourse)),
+    };
+
+    const mockTagsRepository = {
+      create: jest.fn().mockReturnValue(Promise.resolve(expectOutputTags)),
+      findOne: jest.fn(),
+    };
+
+    // @ts-expect-error defined part of methods
+    service['courseRepository'] = mockCoursesRepository;
+    // @ts-expect-error defined part of methods
+    service['tagRepository'] = mockTagsRepository;
+
+    const updateCourseDto: UpdateCoursesDto = {
+      name: 'Test',
+      description: 'Test description',
+      tags: ['nestjs'],
+    };
+
+    const course = await service.update(id, updateCourseDto);
+
+    expect(mockCoursesRepository.save).toHaveBeenCalled();
+    expect(expectOutputCourse).toStrictEqual(course);
   });
 
   // describe('findOne', () => {
