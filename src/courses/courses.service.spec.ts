@@ -1,4 +1,5 @@
 import { CoursesService } from './courses.service';
+import { CreateCoursesDto } from './dto/create-courses.dto';
 
 describe('CoursesService', () => {
   let service: CoursesService;
@@ -13,6 +14,50 @@ describe('CoursesService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  it('should create a course', async () => {
+    const expectOutputTags = [
+      {
+        id,
+        name: 'nestjs',
+        created_at: date,
+      },
+    ];
+
+    const expectOutputCourse = {
+      id,
+      name: 'Test',
+      description: 'Test description',
+      created_at: date,
+      tags: expectOutputTags,
+    };
+
+    const mockCoursesRepository = {
+      create: jest.fn().mockReturnValue(Promise.resolve(expectOutputCourse)),
+      save: jest.fn().mockReturnValue(Promise.resolve(expectOutputCourse)),
+    };
+
+    const mockTagsRepository = {
+      create: jest.fn().mockReturnValue(Promise.resolve(expectOutputTags)),
+      findOne: jest.fn(),
+    };
+
+    // @ts-expect-error defined part of methods
+    service['courseRepository'] = mockCoursesRepository;
+    // @ts-expect-error defined part of methods
+    service['tagRepository'] = mockTagsRepository;
+
+    const createCourseDTO: CreateCoursesDto = {
+      name: 'Test',
+      description: 'Test description',
+      tags: ['nestjs'],
+    };
+
+    const newCourse = await service.create(createCourseDTO);
+
+    expect(mockCoursesRepository.save).toHaveBeenCalled();
+    expect(expectOutputCourse).toStrictEqual(newCourse);
   });
 
   // describe('findOne', () => {
